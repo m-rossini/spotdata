@@ -1,6 +1,7 @@
 package com.spotdata;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import com.spotdata.credentials.CredentialProvider;
+import com.spotdata.model.SpotifyCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -12,16 +13,16 @@ public class SpotifyClient {
     private static final Logger logger = LoggerFactory.getLogger(SpotifyClient.class);
     private final SpotifyApi spotifyApi;
 
-    public SpotifyClient() {
-        Dotenv dotenv = Dotenv.load();
+    public SpotifyClient(CredentialProvider credentialProvider, String redirectUriStr) {
+        SpotifyCredentials credentials = credentialProvider.getCredentials();
         
-        String clientId = dotenv.get("SPOTIFY_CLIENT_ID");
-        String clientSecret = dotenv.get("SPOTIFY_CLIENT_SECRET");
-        URI redirectUri = SpotifyHttpManager.makeUri(dotenv.get("SPOTIFY_REDIRECT_URI"));
+        String clientId = credentials.clientId();
+        String clientSecret = credentials.clientSecret();
+        URI redirectUri = SpotifyHttpManager.makeUri(redirectUriStr);
 
         if (clientId == null || clientSecret == null || redirectUri == null) {
-            logger.error("Missing Spotify credentials in .env file");
-            throw new RuntimeException("Missing Spotify credentials");
+            logger.error("Missing Spotify credentials or redirect URI");
+            throw new RuntimeException("Missing configuration");
         }
 
         this.spotifyApi = new SpotifyApi.Builder()

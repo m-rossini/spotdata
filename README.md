@@ -28,7 +28,7 @@ A Java-based tool to fetch data from your Spotify account using the Spotify Web 
 
 Run the main application:
 ```bash
-mvn exec:java -Dexec.mainClass="com.spotdata.App"
+mvn exec:java -Dexec.mainClass="com.spotdata.SpotData"
 ```
 
 ## Logging
